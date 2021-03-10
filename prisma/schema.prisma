@@ -1,0 +1,27 @@
+// Copyright (c) 2021 Marvin "NurMarvin" Witt
+// Licensed under the Open Software License version 3.0
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model GuildConfig {
+  id           String        @id
+  prefix       String        @default("pdb ")
+  pronounRoles PronounRole[]
+}
+
+model PronounRole {
+  id            String       @id
+  pronoun       String
+  guildConfig   GuildConfig? @relation(fields: [guildConfigId], references: [id])
+  guildConfigId String?
+}
