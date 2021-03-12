@@ -38,6 +38,11 @@ export const getGuildConfig = async (id: string) => {
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
+  client.user?.setPresence({
+    activity: {
+      name: `pronoundb.org | ${client.guilds.cache.size} Servers`,
+    },
+  });
 });
 
 client.on('guildCreate', async (guild) => {
