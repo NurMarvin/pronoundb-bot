@@ -9,7 +9,7 @@ If you added the bot to a server that already has a lot of members and you want 
 
 ## How to contribute
 
-Got something to improve on this shitty code? Feel free to [open a pull request](https://github.com/NurMarvin/pronoundb-bot/pulls) and I'll gladly take a look at significantly better code. Just as shit at coding as me? No worries, just [open an issue instead](https://github.com/NurMarvin/pronoundb-bot/issues/new) and I'll try to code it myself, but no guarantees it won't break.
+Got something to improve on this shitty code? Feel free to [open a pull request](https://github.com/NurMarvin/pronoundb-bot/pulls) and I'll gladly take a look at your significantly better code. Just as shit at coding as me? No worries, just [open an issue instead](https://github.com/NurMarvin/pronoundb-bot/issues/new) and I'll try to code it myself, but no guarantees it won't break.
 
 ## Disclaimer
 
