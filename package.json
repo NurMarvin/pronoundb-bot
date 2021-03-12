@@ -8,6 +8,7 @@
   "license": "OSL-3.0",
   "private": true,
   "scripts": {
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon",
     "watch": "tsc -w"
