@@ -46,6 +46,12 @@ client.on('ready', () => {
 });
 
 client.on('guildCreate', async (guild) => {
+  client.user?.setPresence({
+    activity: {
+      name: `pronoundb.org | ${client.guilds.cache.size} Servers`,
+    },
+  });
+
   const guildConfig = await getGuildConfig(guild.id);
   let channel = guild.systemChannel;
 
@@ -68,6 +74,14 @@ client.on('guildCreate', async (guild) => {
     // Ignore, we probably just don't have any channel to talk in
   }
   return;
+});
+
+client.on('guildDelete', () => {
+  client.user?.setPresence({
+    activity: {
+      name: `pronoundb.org | ${client.guilds.cache.size} Servers`,
+    },
+  });
 });
 
 client.on('guildMemberAdd', async (member) => {
