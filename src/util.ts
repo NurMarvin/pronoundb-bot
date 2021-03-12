@@ -5,6 +5,7 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { DiscordAPIError, Guild, GuildMember } from 'discord.js';
+import { createClient } from 'redis';
 
 const prisma = new PrismaClient();
 const apiClient = axios.create({
@@ -12,6 +13,15 @@ const apiClient = axios.create({
   headers: {
     'User-Agent': `PronounDB-Bot/1.0 (+https://github.com/NurMarvin/pronoundb-bot)`,
   },
+});
+const redis = createClient(process.env.REDIS_URL || '');
+
+redis.on('connect', (err) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log('Connected to Redis DB!');
 });
 
 const Pronouns: { [key: string]: string | null } = Object.freeze({
@@ -72,20 +82,27 @@ export const createPronounRole = async (guild: Guild, pronoun: string) => {
 };
 
 export const tryAssignPronounRole = async (member: GuildMember) => {
-  try {
-    const result = await apiClient.get<{ pronouns: string }>(`/lookup`, {
-      params: {
-        id: member.user.id,
-        platform: 'discord',
-      },
-    });
+  redis.get(`user:${member.id}`, async (_, pronouns) => {
+    if (!pronouns) {
+      try {
+        pronouns = (
+          await apiClient.get<{ pronouns: string }>(`/lookup`, {
+            params: {
+              id: member.user.id,
+              platform: 'discord',
+            },
+          })
+        ).data.pronouns;
 
-    if (result.status === 200) {
-      await assignPronounRole(member, result.data.pronouns);
+        redis.setex(`user:${member.id}`, 60, pronouns);
+      } catch (e) {
+        // Ignore, probably just 404 because the user has no pronouns set
+        return;
+      }
     }
-  } catch (e) {
-    // Ignore, probably just 404 because the user has no pronouns set
-  }
+
+    await assignPronounRole(member, pronouns);
+  });
 };
 
 export const tryAssignPronounRolesBulk = async (members: GuildMember[]) => {
@@ -93,21 +110,44 @@ export const tryAssignPronounRolesBulk = async (members: GuildMember[]) => {
     const chunks = chunkArray(members, 50);
 
     for (let chunk of chunks) {
+      const pronounMap: { [key: string]: string } = {};
+
+      for (let member of chunk) {
+        redis.get(`user:${member.id}`, async (_, pronouns) => {
+          if (pronouns) {
+            pronounMap[member.id] = pronouns;
+          }
+        });
+      }
+
       const result = await apiClient.get<{ [key: string]: string }>(
         `/lookup-bulk`,
         {
           params: {
-            ids: chunk.map((member) => member.id).join(','),
+            ids: chunk
+              .filter((member) => !pronounMap[member.id])
+              .map((member) => member.id)
+              .join(','),
             platform: 'discord',
           },
         }
       );
 
       if (result.status === 200) {
-        for (let memberId of Object.keys(result.data)) {
+        const userIds = Object.keys(result.data);
+
+        userIds.forEach((id) => {
+          const pronouns = result.data[id];
+          pronounMap[id] = pronouns;
+          redis.setex(`user:${id}`, 60, pronouns);
+        });
+
+        for (let memberId of Object.keys(pronounMap)) {
+          const pronouns = pronounMap[memberId];
+
           await assignPronounRole(
             members.find((m) => m.id === memberId)!!,
-            result.data[memberId]
+            pronouns
           );
         }
       }
