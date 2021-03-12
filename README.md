@@ -4,7 +4,7 @@ A Discord Bot that uses the PronounDB API to make people aware of other people's
 
 ## How to use
 
-Simply invite the bot by [clicking on this link](https://nurmarv.in/invite-pronoundb-bot). After that the bot will automatically assign the pronoun roles to people that have set them up on pronoundb.org whenever they type in chat. So, if you haven't already, [create an account on PronounDB](https://pronoundb.org/register) and set-up your pronouns! \
+Simply invite the bot by [clicking on this link](https://nurmarv.in/invite-pronoundb-bot). After that the bot will automatically assign the pronoun roles to people that have set them up on pronoundb.org whenever they join the server or type in chat. So, if you haven't already, [create an account on PronounDB](https://pronoundb.org/register) and set-up your pronouns! \
 If you added the bot to a server that already has a lot of members and you want to sync them, you can run `pdb sync` and the bot will **try** to go through all members on the server and try to assign their pronoun role (no guarantees this will not break, my code is shit).
 
 ## How to contribute
