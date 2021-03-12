@@ -1,6 +1,6 @@
 # PronounDB.org Discord Bot
 
-A Discord Bot that uses the PronounDB API to make people aware of people's pronouns!
+A Discord Bot that uses the PronounDB API to make people aware of other people's pronouns!
 
 ## How to use
 
